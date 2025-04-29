@@ -11,13 +11,15 @@ CREATE TABLE customers
     password VARCHAR(50) NOT NULL
 );
 
+DROP TABLE IF EXISTS order_audit;
 
-CREATE TABLE admins
+CREATE TABLE order_audit
 (
-	admin_id INT AUTO_INCREMENT PRIMARY KEY,
-    first_name VARCHAR(50),
-    last_name VARCHAR(50),
-    password VARCHAR(50) NOT NULL
+	order_id INT NOT NULL,
+    product_id INT NOT NULL,
+    order_total FLOAT NOT NULL,
+    action_type VARCHAR(50) NOT NULL,
+    action_date DATETIME NOT NULL
 );
 
 CREATE TABLE categories
@@ -37,9 +39,6 @@ CREATE TABLE rental_products
     FOREIGN KEY (category_id) REFERENCES categories(category_id)
 );
 
-ALTER TABLE rental_products
-MODIFY quantity INT;
-
 CREATE TABLE orders
 (
 	order_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -50,6 +49,16 @@ CREATE TABLE orders
     order_total INT NOT NULL,
     FOREIGN KEY (product_id) REFERENCES rental_products(product_id),
     FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+);
+
+CREATE TABLE order_products
+(
+	item_id INT PRIMARY KEY AUTO_INCREMENT,
+	product_id INT,
+    order_id INT,
+    quantity_taken INT,
+    FOREIGN KEY (product_id) REFERENCES rental_products(product_id),
+    FOREIGN KEY (order_id) REFERENCES orders(order_id)
 );
 
 
@@ -92,10 +101,11 @@ CREATE TABLE rental_dates
     product_id INT,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
-    FOREIGN KEY (product_id) REFERENCES rental_products(product_id)
+    FOREIGN KEY (product_id) REFERENCES rental_products(product_id),
+    FOREIGN KEY (order_product_id) REFERENCES order_products(order_product_id)
 );
 
--- for every product_id go through every start date and end date and compare them with the initial start and the initial end dates
+
 
 CREATE TABLE rental_addresses
 (
@@ -107,12 +117,9 @@ CREATE TABLE rental_addresses
     FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
 );
 
-
+-- make order products table
 -- include the address as part of the order
--- remove product inventory? 
 -- fix classes in intelij
--- add triggers
--- insert products, categories, 
 
 
 
@@ -126,12 +133,37 @@ FROM rental_dates d JOIN rental_products p ON d.product_id = p.product_id;
 CREATE VIEW product_ratings AS
 SELECT AVG(rating) AS average_rating, p.product_id, product_name FROM rental_reviews r JOIN rental_products p ON r.product_id = p.product_id;
 
-
-DROP PROCEDURE createOrder;
+-- triggers
 
 DELIMITER $$
-CREATE PROCEDURE createOrder(IN in_customer_id INT, IN in_product_id INT, IN in_order_date DATE, 
-IN in_rental_days_amount INT, IN in_start_date DATE, IN in_end_date DATE)
+
+CREATE TRIGGER order_after_insert AFTER INSERT ON orders FOR EACH ROW
+BEGIN
+INSERT INTO order_audit(order_id, product_id, order_total, action_type, action_date)
+VALUES (NEW.order_id, NEW.product_id, NEW.order_total, 'INSERTED',NOW());
+
+END $$
+DELIMITER ;
+
+DELIMITER $$
+
+DROP TRIGGER IF EXISTS order_after_delete;
+
+CREATE TRIGGER order_after_delete AFTER DELETE ON orders FOR EACH ROW
+BEGIN
+INSERT INTO order_audit(order_id, product_id, order_total, action_type, action_date)
+VALUES (OLD.order_id, OLD.product_id, OLD.order_total, 'INSERTED',NOW());
+
+END $$
+DELIMITER ;
+
+
+
+DROP PROCEDURE IF EXISTS createOrder;
+
+DELIMITER $$
+CREATE PROCEDURE createOrder(IN in_customer_id INT, IN in_product_id INT, 
+IN in_rental_days_amount INT, IN in_start_date DATE, IN in_end_date DATE, IN amount_chosen INT)
 BEGIN
 DECLARE total_price INT;
 DECLARE rental_days INT;
@@ -145,43 +177,52 @@ SELECT DATEDIFF(start_date, end_date) INTO rental_days
 FROM rental_dates
 WHERE product_id = in_product_id;
 
--- descrease quantity
-UPDATE rental_products
-SET quantity = quantity - 1
-WHERE product_id = in_product_id;
-
 -- get the price
-SELECT price, quantity, (price * quantity) AS total INTO total_price
+SELECT price, (price * amount_chosen) AS total INTO total_price
 FROM rental_products 
 WHERE product_id = in_product_id; 
 
 -- make an order
-INSERT INTO orders(customer_id, order_date, start_date, end_date, rental_days_amount)
-VALUES(in_customer_id, in_order_date, in_start_date, in_end_date, rental_days);
+INSERT INTO orders(customer_id, order_date, start_date, end_date, rental_days_amount, order_total)
+VALUES(in_customer_id, curdate(), in_start_date, in_end_date, rental_days, total_price);
 
---
+
+INSERT INTO order_products(product_id, order_id, quantity_taken)
+VALUES(in_product_id, in_order_id, amount_chosen);
 
 
 END $$
 DELIMITER ;
+
+UPDATE rental_products
+SET quantity = 1
+WHERE product_id = 1;
 
 
 DROP PROCEDURE cancelOrder;
 
 DELIMITER $$
-CREATE PROCEDURE cancelOrder(IN i_order_id INT, IN i_product_id INT)
+CREATE PROCEDURE cancelOrder(IN i_order_id INT)
 BEGIN
 
 DELETE FROM rental_dates WHERE order_id = i_order_id;
 
+DELETE FROM order_products WHERE order_id = i_order_id;
+
 DELETE FROM orders WHERE order_id = i_order_id;
 
-UPDATE rental_products
-SET quantity = quantity + 1
-WHERE product_id = i_product_id;
+
 
 END $$
 DELIMITER ;
+
+CALL cancelOrder(3);
+
+SELECT * FROM orders;
+SELECT * FROM rental_dates;
+SELECT * FROM order_products;
+
+
 
 DROP PROCEDURE checkAvailableProducts;
 
@@ -189,31 +230,45 @@ DROP PROCEDURE checkAvailableProducts;
 DELIMITER $$
 CREATE PROCEDURE checkAvailableProducts(IN user_start_date DATE, IN user_end_date DATE)
 BEGIN
-
+ 
 
  -- SELECT * 
  -- FROM taken_dates
  -- WHERE product_id NOT IN 
  -- (start_date <= user_end_date AND end_date >= user_start_date);
+ 
+ 
 
-SELECT product_id, product_name, quantity
-FROM rental_products
-WHERE product_id NOT IN
-(
-SELECT start_date, end_date, p.product_id
-FROM rental_products p JOIN rental_dates d ON p.product_id = d.product_id
-WHERE (start_date <= user_end_date AND end_date >= user_start_date)
-);
+SELECT p.product_id, p.product_name, p.price, p.quantity - IFNULL(SUM(op.quantity_taken), 0) AS amount_available
+FROM rental_products p LEFT JOIN order_products op ON p.product_id = op.product_id LEFT JOIN rental_dates d ON op.order_product_id = d.order_product_id
+AND (d.start_date <= user_end_date AND d.end_date >= user_start_date)
+GROUP BY p.product_id, p.product_name, p.quantity, p.price
+HAVING amount_available > 0;
 
 
 END $$
 DELIMITER ;
 
+SELECT * FROM rental_products;
+
+
+UPDATE rental_products
+SET quantity = quantity + 2
+WHERE product_id = 1;
+
+CALL checkAvailableProducts('2025-04-26','2025-04-30');
+
+TRUNCATE ordrs;
+TRUNCATE order_products;
+TRUNCATE rental_dates;
 
 SELECT * FROM rental_products;
 
  INSERT INTO orders(product_id, customer_id, order_date, rental_days_amount, order_total)
  VALUES (1, 1, '2025-04-26', 3, 400);
+ 
+  INSERT INTO orders(product_id, customer_id, order_date, rental_days_amount, order_total)
+ VALUES (2, 1, '2025-04-26', 3, 400);
  
 INSERT INTO rental_dates(product_id, start_date, end_date)
 VALUES (1, '2025-04-26','2025-04-30');
@@ -221,6 +276,16 @@ VALUES (1, '2025-04-26','2025-04-30');
  SELECT * FROM orders;
  
  SELECT * FROM rental_dates;
+ 
+ SELECT * FROM rental_products;
+ 
+ INSERT INTO order_products(product_id, order_id, quantity_taken)
+ VALUES (1, 2, 1);
+ 
+ INSERT INTO order_products(product_id, order_id, quantity_taken)
+ VALUES (2,3,1);
+ 
+ SELECT * FROM order_products;
  
 CALL checkAvailableProducts('2025-04-26','2025-04-30');
 
