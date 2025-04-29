@@ -23,8 +23,10 @@ public class RentalProductDAO
                 rentalProducts.add(new RentalProduct(
                         rs.getInt("product_id"),
                         rs.getInt("category_id"),
+                        rs.getString("product_name"),
                         rs.getString("dimensions"),
-                        rs.getInt("price")
+                        rs.getInt("price"),
+                        rs.getInt("quantity")
                 ));
             }
 

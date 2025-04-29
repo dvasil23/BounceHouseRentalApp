@@ -24,7 +24,8 @@ public class RentalReviewDAO
                         rs.getInt("order_id"),
                         rs.getInt("customer_id"),
                         rs.getString("text"),
-                        rs.getInt("rating")
+                        rs.getInt("rating"),
+                        rs.getInt("product_id")
 
                 ));
             }

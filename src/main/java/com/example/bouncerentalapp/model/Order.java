@@ -8,16 +8,16 @@ public class Order
 
     private String orderDate;
     private int rentalDaysAmount;
-    private float totalPrice;
+    private float orderTotal;
 
 
-    public Order(int orderID, int productID, int customerID, String orderDate, int rentalDaysAmount, float totalPrice){
+    public Order(int orderID, int productID, int customerID, String orderDate, int rentalDaysAmount, float orderTotal){
         this.setOrderID(orderID);
         this.setProductID(productID);
         this.setCustomerID(customerID);
         this.setOrderDate(orderDate);
         this.setRentalDaysAmount(rentalDaysAmount);
-        this.setTotalPrice(totalPrice);
+        this.setOrderTotal(orderTotal);
     }
 
     public String getOrderDate()
@@ -40,14 +40,14 @@ public class Order
         this.rentalDaysAmount = rentalDaysAmount;
     }
 
-    public float getTotalPrice()
+    public float getOrderTotal()
     {
-        return totalPrice;
+        return orderTotal;
     }
 
-    public void setTotalPrice(float totalPrice)
+    public void setOrderTotal(float orderTotal)
     {
-        this.totalPrice = totalPrice;
+        this.orderTotal = orderTotal;
     }
 
     public int getOrderID()

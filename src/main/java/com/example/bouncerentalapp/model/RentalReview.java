@@ -8,12 +8,15 @@ public class RentalReview
     private String reviewText;
     private int rating;
 
-    public RentalReview(int reviewID, int orderID, int customerID, String reviewText, int rating){
+    private int productID;
+
+    public RentalReview(int reviewID, int orderID, int customerID, String reviewText, int rating, int productID){
         this.setReviewID(reviewID);
         this.setOrderID(orderID);
         this.setCustomerID(customerID);
         this.setReviewText(reviewText);
         this.setRating(rating);
+        this.setProductID(productID);
     }
 
     public String getReviewText()
@@ -64,5 +67,15 @@ public class RentalReview
     public void setCustomerID(int customerID)
     {
         this.customerID = customerID;
+    }
+
+    public int getProductID()
+    {
+        return productID;
+    }
+
+    public void setProductID(int productID)
+    {
+        this.productID = productID;
     }
 }

@@ -23,7 +23,9 @@ public class RentalDateDAO
                         rs.getInt("rent_date_id"),
                         rs.getInt("product_id"),
                         rs.getString("start_date"),
-                        rs.getString("end_date")
+                        rs.getString("end_date"),
+                        rs.getInt("order_product_id"),
+                        rs.getInt("order_id")
                 ));
             }
 

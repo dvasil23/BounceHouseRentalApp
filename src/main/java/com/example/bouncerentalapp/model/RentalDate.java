@@ -7,11 +7,17 @@ public class RentalDate
     private String startDate;
     private String endDate;
 
-    public RentalDate(int rentalDateID, int productID, String startDate, String endDate){
+    private int orderProductID;
+
+    private int orderID;
+
+    public RentalDate(int rentalDateID, int productID, String startDate, String endDate, int orderProductID, int orderID){
         this.setRentalDateID(rentalDateID);
         this.setProductID(productID);
         this.setStartDate(startDate);
         this.setEndDate(endDate);
+        this.setOrderProductID(orderProductID);
+        this.setOrderID(orderID);
     }
 
     public String getStartDate()
@@ -52,5 +58,25 @@ public class RentalDate
     public void setProductID(int productID)
     {
         this.productID = productID;
+    }
+
+    public int getOrderProductID()
+    {
+        return orderProductID;
+    }
+
+    public void setOrderProductID(int orderProductID)
+    {
+        this.orderProductID = orderProductID;
+    }
+
+    public int getOrderID()
+    {
+        return orderID;
+    }
+
+    public void setOrderID(int orderID)
+    {
+        this.orderID = orderID;
     }
 }
