@@ -1,14 +1,16 @@
 package com.example.bouncerentalapp.model;
 
+import java.time.LocalDate;
+
 public class OrderAudit
 {
     private int orderID;
     private int productID;
     private float orderTotal;
     private String actionType;
-    private String actionDate;
+    private LocalDate actionDate;
 
-    public OrderAudit(int orderID,int productID,float orderTotal, String actionType, String actionDate){
+    public OrderAudit(int orderID,int productID,float orderTotal, String actionType, LocalDate actionDate){
         this.orderID = orderID;
         this.productID = productID;
         this.orderTotal = orderTotal;
@@ -48,11 +50,11 @@ public class OrderAudit
         this.actionType = actionType;
     }
 
-    public String getActionDate() {
+    public LocalDate getActionDate() {
         return actionDate;
     }
 
-    public void setActionDate(String actionDate) {
+    public void setActionDate(LocalDate actionDate) {
         this.actionDate = actionDate;
     }
 }

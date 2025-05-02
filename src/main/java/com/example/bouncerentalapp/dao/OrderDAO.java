@@ -3,10 +3,8 @@ import com.example.bouncerentalapp.MyJDBC;
 import com.example.bouncerentalapp.model.Order;
 
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +23,7 @@ public class OrderDAO
                         rs.getInt("order_id"),
                         rs.getInt("product_id"),
                         rs.getInt("customer_id"),
-                        rs.getString("order_date"),
+                        rs.getDate("order_date").toLocalDate(),
                         rs.getInt("rental_days_amount"),
                         rs.getFloat("total_price")
                 ));
@@ -37,4 +35,46 @@ public class OrderDAO
 
         return orders;
     }
-}
+
+    public static void createOrder(int customerID, int productID, LocalDate orderDate,
+                                   LocalDate startDate, LocalDate endDate,
+                                   int amountChosen){
+        String sql = "{CALL createOrder(?, ?, ?, ? ,?)}";
+
+        try (Connection conn = MyJDBC.getConnection();
+             CallableStatement stmt = conn.prepareCall(sql)) {
+
+            stmt.setInt(1, customerID);
+            stmt.setInt(2, productID);
+            stmt.setDate(3, java.sql.Date.valueOf(orderDate));
+            stmt.setDate(4, java.sql.Date.valueOf(startDate));
+            stmt.setDate(5, java.sql.Date.valueOf(endDate));
+            stmt.setInt(6,amountChosen);
+
+            stmt.execute();
+            System.out.println("Order created successfully.");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void cancelOrder(int orderID){
+        String sql = "{CALL cancelOrder(?)}";
+
+        try(Connection conn = MyJDBC.getConnection();
+            CallableStatement stmt  = conn.prepareCall(sql)){
+                stmt.setInt(1,orderID);
+
+            stmt.execute();
+            System.out.println("Order canceled successfully.");
+
+        } catch (SQLException e){
+                e.printStackTrace();
+        }
+    }
+
+
+    }
+
+

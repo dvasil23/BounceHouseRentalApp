@@ -22,8 +22,8 @@ public class RentalDateDAO
                 rentalDates.add(new RentalDate(
                         rs.getInt("rent_date_id"),
                         rs.getInt("product_id"),
-                        rs.getString("start_date"),
-                        rs.getString("end_date"),
+                        rs.getDate("start_date").toLocalDate(),
+                        rs.getDate("end_date").toLocalDate(),
                         rs.getInt("order_product_id"),
                         rs.getInt("order_id")
                 ));

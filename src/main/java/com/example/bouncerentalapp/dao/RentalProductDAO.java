@@ -3,10 +3,8 @@ import com.example.bouncerentalapp.MyJDBC;
 import com.example.bouncerentalapp.model.RentalProduct;
 
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,4 +34,37 @@ public class RentalProductDAO
 
         return rentalProducts;
     }
+
+    public static List<RentalProduct> getAvailableProducts(LocalDate startDate, LocalDate endDate) {
+        List<RentalProduct> availableProducts = new ArrayList<>();
+
+        String sql = "{CALL checkAvailableProducts(?, ?)}";
+
+        try (Connection conn = MyJDBC.getConnection();
+             CallableStatement stmt = conn.prepareCall(sql)) {
+
+            stmt.setDate(1, Date.valueOf(startDate));
+            stmt.setDate(2, Date.valueOf(endDate));
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int productId = rs.getInt("product_id");
+                    int categoryID = rs.getInt("category_id");
+                    String name = rs.getString("product_name");
+                    String dimensions = rs.getString("dimensions");
+                    float price = rs.getFloat("price");
+                    int amountAvailable = rs.getInt("amount_available");
+
+                    // Assuming you have a Product constructor that includes available quantity
+                    availableProducts.add(new RentalProduct(productId, categoryID, name, dimensions, price, amountAvailable));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return availableProducts;
+    }
+
 }

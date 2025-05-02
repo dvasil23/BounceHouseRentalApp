@@ -1,17 +1,19 @@
 package com.example.bouncerentalapp.model;
 
+import java.time.LocalDate;
+
 public class Order
 {
     private int orderID;
     private int productID;
     private int customerID;
 
-    private String orderDate;
+    private LocalDate orderDate;
     private int rentalDaysAmount;
     private float orderTotal;
 
 
-    public Order(int orderID, int productID, int customerID, String orderDate, int rentalDaysAmount, float orderTotal){
+    public Order(int orderID, int productID, int customerID, LocalDate orderDate, int rentalDaysAmount, float orderTotal){
         this.setOrderID(orderID);
         this.setProductID(productID);
         this.setCustomerID(customerID);
@@ -20,12 +22,12 @@ public class Order
         this.setOrderTotal(orderTotal);
     }
 
-    public String getOrderDate()
+    public LocalDate getOrderDate()
     {
         return orderDate;
     }
 
-    public void setOrderDate(String orderDate)
+    public void setOrderDate(LocalDate orderDate)
     {
         this.orderDate = orderDate;
     }

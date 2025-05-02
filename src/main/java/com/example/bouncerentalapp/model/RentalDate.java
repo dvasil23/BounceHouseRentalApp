@@ -1,17 +1,19 @@
 package com.example.bouncerentalapp.model;
 
+import java.time.LocalDate;
+
 public class RentalDate
 {
     private int rentalDateID;
     private int productID;
-    private String startDate;
-    private String endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
     private int orderProductID;
 
     private int orderID;
 
-    public RentalDate(int rentalDateID, int productID, String startDate, String endDate, int orderProductID, int orderID){
+    public RentalDate(int rentalDateID, int productID, LocalDate startDate, LocalDate endDate, int orderProductID, int orderID){
         this.setRentalDateID(rentalDateID);
         this.setProductID(productID);
         this.setStartDate(startDate);
@@ -20,22 +22,22 @@ public class RentalDate
         this.setOrderID(orderID);
     }
 
-    public String getStartDate()
+    public LocalDate getStartDate()
     {
         return startDate;
     }
 
-    public void setStartDate(String startDate)
+    public void setStartDate(LocalDate startDate)
     {
         this.startDate = startDate;
     }
 
-    public String getEndDate()
+    public LocalDate getEndDate()
     {
         return endDate;
     }
 
-    public void setEndDate(String endDate)
+    public void setEndDate(LocalDate endDate)
     {
         this.endDate = endDate;
     }

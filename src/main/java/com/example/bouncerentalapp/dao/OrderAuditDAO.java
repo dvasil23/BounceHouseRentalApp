@@ -26,7 +26,7 @@ public class OrderAuditDAO
                         rs.getInt("product_id"),
                         rs.getFloat("order_total"),
                         rs.getString("action_type"),
-                        rs.getString("action_date")
+                        rs.getDate("action_date").toLocalDate()
                 ));
             }
 

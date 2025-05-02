@@ -7,11 +7,11 @@ public class RentalProduct
 
     private String productName;
     private String dimensions;
-    private int price;
+    private float price;
 
     private int quantity;
 
-    public RentalProduct(int productID, int categoryID,String productName, String dimensions, int price, int quantity){
+    public RentalProduct(int productID, int categoryID,String productName, String dimensions, float price, int quantity){
         this.setProductID(productID);
         this.setCategoryID(categoryID);
         this.setProductName(productName);
@@ -30,12 +30,12 @@ public class RentalProduct
         this.dimensions = dimensions;
     }
 
-    public int getPrice()
+    public float getPrice()
     {
         return price;
     }
 
-    public void setPrice(int price)
+    public void setPrice(float price)
     {
         this.price = price;
     }
