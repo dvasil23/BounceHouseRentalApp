@@ -11,6 +11,8 @@ public class RentalProduct
 
     private int quantity;
 
+    private int quantitySelected = 1;
+
     public RentalProduct(int productID, int categoryID,String productName, String dimensions, float price, int quantity){
         this.setProductID(productID);
         this.setCategoryID(categoryID);
@@ -78,5 +80,15 @@ public class RentalProduct
     public void setQuantity(int quantity)
     {
         this.quantity = quantity;
+    }
+
+    public int getQuantitySelected()
+    {
+        return quantitySelected;
+    }
+
+    public void setQuantitySelected(int quantitySelected)
+    {
+        this.quantitySelected = quantitySelected;
     }
 }
