@@ -1,6 +1,8 @@
 package com.example.bouncerentalapp;
 
+import com.example.bouncerentalapp.dao.ProductImageDAO;
 import com.example.bouncerentalapp.dao.RentalProductDAO;
+import com.example.bouncerentalapp.model.ProductImage;
 import com.example.bouncerentalapp.model.RentalProduct;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -91,8 +93,18 @@ public class HelloController
         Stage popupStage = new Stage();
         popupStage.setTitle("Product Details");
 
-        // Image (Replace with real image loading logic)
-        ImageView imageView = new ImageView(new Image("file:images/" + product.getProductID() + ".png"));
+        System.out.println("loading image...");
+
+        String imageUrl = ProductImageDAO.getImageUrlByProductId(product.getProductID());
+        ImageView imageView;
+
+        if (imageUrl != null) {
+            imageView = new ImageView(new Image(getClass().getResourceAsStream("/" + imageUrl)));
+        } else {
+            imageView = new ImageView("images/default.png"); // Or use a default image
+            System.out.println("No image found for product ID: " + product.getProductID());
+        }
+
         imageView.setFitHeight(150);
         imageView.setFitWidth(150);
 
@@ -103,18 +115,21 @@ public class HelloController
         Label priceLabel = new Label("Price: $" + product.getPrice());
         Label quantityLabel = new Label("Quantity: " + product.getQuantitySelected());
 
-        // Increase Quantity Button
+        // increase Quantity Button
         Button increaseBtn = new Button("+");
         increaseBtn.setOnAction(e -> {
             product.setQuantitySelected(product.getQuantitySelected() + 1);
             quantityLabel.setText("Quantity: " + product.getQuantitySelected());
         });
-        // Increase Quantity Button
+        // decrease Quantity Button
         Button decreaseBtn = new Button("-");
         decreaseBtn.setOnAction(e -> {
-            product.setQuantitySelected(product.getQuantitySelected() - 1);
-            quantityLabel.setText("Quantity: " + product.getQuantitySelected());
-        });
+            if(product.getQuantitySelected() >= 1){
+                product.setQuantitySelected(product.getQuantitySelected() - 1);
+                quantityLabel.setText("Quantity: " + product.getQuantitySelected());
+                }});
+
+
 
         // Checkout Button
         Button checkoutBtn = new Button("Checkout");

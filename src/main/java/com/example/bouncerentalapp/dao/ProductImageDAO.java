@@ -3,34 +3,31 @@ import com.example.bouncerentalapp.MyJDBC;
 import com.example.bouncerentalapp.model.ProductImage;
 
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProductImageDAO
 {
-    public static List<ProductImage> getProductImages() {
-        List<ProductImage> productImages = new ArrayList<>();
+    public static String getImageUrlByProductId(int productId) {
+        String imageUrl = null;
+
+        String sql = "SELECT image_url FROM product_images WHERE product_id = ?";
 
         try (Connection conn = MyJDBC.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUCT_IMAGES")) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            while (rs.next()) {
-                productImages.add(new ProductImage(
-                        rs.getInt("product_id"),
-                        rs.getString("image")
+            stmt.setInt(1, productId);
+            ResultSet rs = stmt.executeQuery();
 
-                ));
+            if (rs.next()) {
+                imageUrl = rs.getString("image_url");
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return productImages;
+        return imageUrl;
     }
 }
