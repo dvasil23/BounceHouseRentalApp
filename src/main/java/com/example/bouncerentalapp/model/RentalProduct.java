@@ -13,6 +13,8 @@ public class RentalProduct
 
     private int quantitySelected = 1;
 
+    private String imageURL;
+
     public RentalProduct(int productID, int categoryID,String productName, String dimensions, float price, int quantity){
         this.setProductID(productID);
         this.setCategoryID(categoryID);
@@ -21,6 +23,13 @@ public class RentalProduct
         this.setPrice(price);
         this.setQuantity(quantity);
     }
+
+    public RentalProduct(int productID, int categoryID,String productName, String dimensions, float price, int quantity, String imageURL){
+        this(productID, categoryID, productName, dimensions, price, quantity);
+        this.imageURL = imageURL;
+    }
+
+
 
     public String getDimensions()
     {
@@ -90,5 +99,15 @@ public class RentalProduct
     public void setQuantitySelected(int quantitySelected)
     {
         this.quantitySelected = quantitySelected;
+    }
+
+    public String getImageURL()
+    {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL)
+    {
+        this.imageURL = imageURL;
     }
 }

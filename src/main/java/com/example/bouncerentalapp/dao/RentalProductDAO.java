@@ -54,9 +54,10 @@ public class RentalProductDAO
                     String dimensions = rs.getString("dimensions");
                     float price = rs.getFloat("price");
                     int amountAvailable = rs.getInt("amount_available");
+                    String imageURL = rs.getString("image_url");
 
                     // Assuming you have a Product constructor that includes available quantity
-                    availableProducts.add(new RentalProduct(productId, categoryID, name, dimensions, price, amountAvailable));
+                    availableProducts.add(new RentalProduct(productId, categoryID, name, dimensions, price, amountAvailable, imageURL));
                 }
             }
 

@@ -26,6 +26,7 @@
       <DatePicker fx:id="startDatePicker" promptText="Start Date"/>
       <DatePicker fx:id="endDatePicker" promptText="End Date"/>
       <Button text="Check Availability" onAction="#onCheckAvailabilityClick"/>
+      <Button text="View Product Reviews" onAction="#handleViewReviews"/>
    </HBox>
 
    <TableView fx:id="productTable" prefHeight="300">

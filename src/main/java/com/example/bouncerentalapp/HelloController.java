@@ -1,8 +1,11 @@
 package com.example.bouncerentalapp;
 
+import com.example.bouncerentalapp.dao.ProductCategoryDAO;
 import com.example.bouncerentalapp.dao.ProductImageDAO;
+import com.example.bouncerentalapp.dao.ProductRatingDAO;
 import com.example.bouncerentalapp.dao.RentalProductDAO;
 import com.example.bouncerentalapp.model.ProductImage;
+import com.example.bouncerentalapp.model.ProductRating;
 import com.example.bouncerentalapp.model.RentalProduct;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -19,7 +22,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -51,6 +54,22 @@ public class HelloController
 
     @FXML
     private TableColumn<RentalProduct, Integer> availableColumn;
+
+
+    @FXML
+    private TableView<ProductRating> reviews;
+
+    @FXML
+    private TableColumn<ProductRating,String> reviewColumn;
+
+    @FXML
+    private TableColumn<ProductRating,Float> avgRatingColumn;
+
+    @FXML
+    private TableColumn<ProductRating,Integer> productIDColumn;
+
+    @FXML
+    private TableColumn<ProductRating,String> prodNameColumn;
 
     @FXML
     public void initialize() {
@@ -87,22 +106,48 @@ public class HelloController
         alert.show();
     }
 
+    @FXML
+    private void handleViewReviews() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/bouncerentalapp/product_reviews_view.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Product Reviews");
+            stage.setScene(new Scene(root));
+            stage.show();
+
+            List<ProductRating> ratings = ProductRatingDAO.getAllRatings();
+            reviews.setItems(FXCollections.observableArrayList(ratings));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     private void showProductPopup(RentalProduct product) {
         Stage popupStage = new Stage();
         popupStage.setTitle("Product Details");
 
-        System.out.println("loading image...");
-
         String imageUrl = ProductImageDAO.getImageUrlByProductId(product.getProductID());
-        ImageView imageView;
+        InputStream stream = getClass().getResourceAsStream("/" + imageUrl);
+        System.out.println("Stream is null? " + (stream == null));
+        ImageView imageView = new ImageView(new Image(stream));
+
+        //getting image path and making image view
+        InputStream is = getClass().getResourceAsStream("/" + imageUrl);
 
         if (imageUrl != null) {
-            imageView = new ImageView(new Image(getClass().getResourceAsStream("/" + imageUrl)));
+            //imageView = new ImageView(new Image(getClass().getResourceAsStream("/" + product.getImageURL())));
+            //System.out.println("image made");
+            imageView = new ImageView(new Image(is));
+            System.out.println("Trying to load: " + getClass().getResource("/" + product.getImageURL()));
+
         } else {
             imageView = new ImageView("images/default.png"); // Or use a default image
             System.out.println("No image found for product ID: " + product.getProductID());
+            System.out.println("Trying to load: " + getClass().getResource("/" + product.getImageURL()));
         }
 
         imageView.setFitHeight(150);
@@ -110,7 +155,10 @@ public class HelloController
 
         // Info Labels
         Label nameLabel = new Label("Product: " + product.getProductName());
-        Label categoryLabel = new Label("Category: " + product.getCategoryID());
+
+        String category = ProductCategoryDAO.getCategory(product.getCategoryID());
+
+        Label categoryLabel = new Label("Category: " + category);
         Label dimensionsLabel = new Label("Dimensions: " + product.getDimensions());
         Label priceLabel = new Label("Price: $" + product.getPrice());
         Label quantityLabel = new Label("Quantity: " + product.getQuantitySelected());
@@ -124,7 +172,7 @@ public class HelloController
         // decrease Quantity Button
         Button decreaseBtn = new Button("-");
         decreaseBtn.setOnAction(e -> {
-            if(product.getQuantitySelected() >= 1){
+            if(product.getQuantitySelected() > 1){
                 product.setQuantitySelected(product.getQuantitySelected() - 1);
                 quantityLabel.setText("Quantity: " + product.getQuantitySelected());
                 }});
@@ -145,7 +193,8 @@ public class HelloController
         HBox buttonBox = new HBox(10, increaseBtn, decreaseBtn, checkoutBtn, closeBtn);
         buttonBox.setAlignment(Pos.CENTER);
 
-        VBox layout = new VBox(10, imageView, nameLabel, categoryLabel, dimensionsLabel, priceLabel, quantityLabel, buttonBox);
+        VBox layout = new VBox(10);
+        layout.getChildren().addAll(imageView,nameLabel, categoryLabel, dimensionsLabel, priceLabel, quantityLabel, buttonBox);
         layout.setPadding(new Insets(15));
         layout.setAlignment(Pos.CENTER);
 

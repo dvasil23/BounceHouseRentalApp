@@ -3,10 +3,7 @@ package com.example.bouncerentalapp.dao;
 import com.example.bouncerentalapp.MyJDBC;
 import com.example.bouncerentalapp.model.ProductRating;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 //VIEW
@@ -18,16 +15,18 @@ public class ProductRatingDAO
         String sql = "SELECT * FROM product_ratings";
 
         try (Connection conn = MyJDBC.getConnection();
-             Statement stmt = conn.createStatement();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                float avgRating = rs.getFloat("average_rating");
-                int productId = rs.getInt("product_id");
-                String productName = rs.getString("product_name");
+                ratings.add(new ProductRating(
+                        rs.getString("review_text"),
+                        rs.getFloat("average_rating"),
+                        rs.getInt("product_id"),
+                        rs.getString("product_name")
 
-                // Optionally check for nulls or 0 rating
-                ratings.add(new ProductRating(avgRating, productId, productName));
+                ));
             }
 
         } catch (SQLException e) {

@@ -344,32 +344,31 @@ INSERT INTO rental_products(category_id, product_name, price)
 VALUES(6, 'Marquee Numbers', 50.00);
 
 -- IMAGES
-
 -- Combos
-INSERT INTO product_images (product_id, image_url) VALUES (1, 'images/combos/pretty_pink_combo.webp');
-INSERT INTO product_images (product_id, image_url) VALUES (2, 'images/combos/mega_tropical.webp');
-INSERT INTO product_images (product_id, image_url) VALUES (3, 'images/combos/firehouse.webp');
-INSERT INTO product_images (product_id, image_url) VALUES (4, 'images/combos/mini_marble.webp');
+INSERT INTO product_images (product_id, image_url) VALUES (1, 'images/combos/pretty_pink.png');
+INSERT INTO product_images (product_id, image_url) VALUES (2, 'images/combos/mega_tropical.png');
+INSERT INTO product_images (product_id, image_url) VALUES (3, 'images/combos/firehouse.png');
+INSERT INTO product_images (product_id, image_url) VALUES (4, 'images/combos/mini_marble.png');
 
 -- Water Slides
-INSERT INTO product_images (product_id, image_url) VALUES (6, 'images/water_slides/island_drop_single_lane.webp');
-INSERT INTO product_images (product_id, image_url) VALUES (7, 'images/water_slides/tiki_shot_dual_lane.webp');
+INSERT INTO product_images (product_id, image_url) VALUES (6, 'images/water_slides/island_drop_single_lane.png');
+INSERT INTO product_images (product_id, image_url) VALUES (7, 'images/water_slides/tiki_shot_dual_lane.png');
 INSERT INTO product_images (product_id, image_url) VALUES (8, 'images/water_slides/liberty_lane.png');
 
 -- Slip n Slide
-INSERT INTO product_images (product_id, image_url) VALUES (9, 'images/slip n slide/marble_slide.webp');
+INSERT INTO product_images (product_id, image_url) VALUES (9, 'images/slip n slide/marble_slide.png');
 
 -- Tent Stuff
-INSERT INTO product_images (product_id, image_url) VALUES (10, 'images/tent_stuff/1729227463928_20x20 HighPeakTent.webp');
-INSERT INTO product_images (product_id, image_url) VALUES (11, 'images/tent_stuff/1729228275915_LEDBistroLights.webp');
+INSERT INTO product_images (product_id, image_url) VALUES (10, 'images/tent_stuff/1729227463928_20x20 HighPeakTent.png');
+INSERT INTO product_images (product_id, image_url) VALUES (11, 'images/tent_stuff/1729228275915_LEDBistroLights.png');
 
 -- Tables & Chairs
-INSERT INTO product_images (product_id, image_url) VALUES (12, 'images/tables_chairs/WhiteRectangleTable.webp');
-INSERT INTO product_images (product_id, image_url) VALUES (13, 'images/tables_chairs/1729227795820_WhiteRoundTable.webp');
-INSERT INTO product_images (product_id, image_url) VALUES (14, 'images/tables_chairs/1729228171128_KidsChair.webp');
-INSERT INTO product_images (product_id, image_url) VALUES (15, 'images/tables_chairs/1729228017557_KidsTable.webp');
-INSERT INTO product_images (product_id, image_url) VALUES (16, 'images/tables_chairs/1729227963356_WhiteChair.webp');
+INSERT INTO product_images (product_id, image_url) VALUES (12, 'images/tables_chairs/white_rectangle_table.png');
+INSERT INTO product_images (product_id, image_url) VALUES (13, 'images/tables_chairs/white_round_table.png');
+INSERT INTO product_images (product_id, image_url) VALUES (14, 'images/tables_chairs/kids_chair.png');
+INSERT INTO product_images (product_id, image_url) VALUES (15, 'images/tables_chairs/kids_table.png');
+INSERT INTO product_images (product_id, image_url) VALUES (16, 'images/tables_chairs/white_chair.png');
 
 -- Marquee
-INSERT INTO product_images (product_id, image_url) VALUES (17, 'images/marquee/marquee_letters.webp');
-INSERT INTO product_images (product_id, image_url) VALUES (18, 'images/marquee/marquee_numbers.avif');
+INSERT INTO product_images (product_id, image_url) VALUES (17, 'images/marquee/marquee_letters.png');
+INSERT INTO product_images (product_id, image_url) VALUES (18, 'images/marquee/marquee_numbers.png');

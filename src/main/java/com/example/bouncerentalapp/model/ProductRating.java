@@ -6,8 +6,11 @@ public class ProductRating
     private int productID;
     private String productName;
 
+    private String reviewText;
+
     // Constructor
-    public ProductRating(float averageRating, int productID, String productName) {
+    public ProductRating(String reviewText, Float averageRating, int productID, String productName) {
+        this.setReviewText(reviewText);
         this.averageRating = averageRating;
         this.productID = productID;
         this.productName = productName;
@@ -37,5 +40,15 @@ public class ProductRating
 
     public void setProductName(String productName) {
         this.productName = productName;
+    }
+
+    public String getReviewText()
+    {
+        return reviewText;
+    }
+
+    public void setReviewText(String reviewText)
+    {
+        this.reviewText = reviewText;
     }
 }

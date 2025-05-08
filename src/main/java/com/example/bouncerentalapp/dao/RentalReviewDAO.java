@@ -2,10 +2,7 @@ package com.example.bouncerentalapp.dao;
 import com.example.bouncerentalapp.MyJDBC;
 import com.example.bouncerentalapp.model.RentalReview;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,9 +11,11 @@ public class RentalReviewDAO
     public static List<RentalReview> getRentalReviews() {
         List<RentalReview> rentalReviews = new ArrayList<>();
 
+        String sql = "SELECT * FROM rental_reviews";
+
         try (Connection conn = MyJDBC.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM RENTAL_REVIEWS")) {
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 rentalReviews.add(new RentalReview(
