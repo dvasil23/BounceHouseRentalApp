@@ -6,15 +6,14 @@ public class Customer
     private String firstName;
     private String lastName;
     private String phoneNumber;
-    private String passsword;
+
 
     public Customer(int customer_id,String firstName, String lastName,
-                    String phoneNumber, String password){
+                    String phoneNumber){
         this.setCustomer_id(customer_id);
         this.setFirstName(firstName);
         this.setLastName(lastName);
         this.setPhoneNumber(phoneNumber);
-        this.setPasssword(password);
 
     }
 
@@ -46,16 +45,6 @@ public class Customer
     public void setPhoneNumber(String phoneNumber)
     {
         this.phoneNumber = phoneNumber;
-    }
-
-    public String getPasssword()
-    {
-        return passsword;
-    }
-
-    public void setPasssword(String passsword)
-    {
-        this.passsword = passsword;
     }
 
     public int getCustomer_id()

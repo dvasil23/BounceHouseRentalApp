@@ -2,37 +2,42 @@ package com.example.bouncerentalapp.dao;
 import com.example.bouncerentalapp.MyJDBC;
 import com.example.bouncerentalapp.model.Customer;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class CustomerDAO
 {
-    public static List<Customer> getAllCustomers() {
-        List<Customer> customers = new ArrayList<>();
+    public static int insertCustomerAndReturnId(Customer customer)
+    {
+        int generatedId = -1;
+
+        String sql = "INSERT INTO customers (first_name, last_name, phone_number) VALUES (?, ?, ?)";
 
         try (Connection conn = MyJDBC.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM CUSTOMERS")) {
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            while (rs.next()) {
-                customers.add(new Customer(
-                        rs.getInt("cusomter_id"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
-                        rs.getString("phone_number"),
-                        rs.getString("password")
-                ));
+            stmt.setString(1, customer.getFirstName());
+            stmt.setString(2, customer.getLastName());
+            stmt.setString(3, customer.getPhoneNumber());
+
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        generatedId = rs.getInt(1);
+                    }
+                }
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
-        }
 
-        return customers;
+        }
+        return generatedId;
     }
+
+
 }

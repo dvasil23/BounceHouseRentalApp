@@ -3,17 +3,29 @@
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
+
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
 
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.bouncerentalapp.CheckoutController"
-      spacing="10" alignment="CENTER" padding="20">
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.bouncerentalapp.CheckoutController"
+      spacing="10" alignment="TOP_CENTER">
 
-    <Label fx:id="productNameLabel" text="Product Name"/>
-    <Label fx:id="categoryLabel" text="Category"/>
-    <Label fx:id="dimensionsLabel" text="Dimensions"/>
-    <Label fx:id="priceLabel" text="Price"/>
-    <Label fx:id="quantityLabel" text="Quantity"/>
+    <Label text="Checkout Screen" style="-fx-font-size: 16px;" />
 
-    <Button fx:id="confirmOrderButton" text="Confirm Order" onAction="#onConfirmOrderClick"/>
+    <TextField fx:id="firstNameField" promptText="First Name" />
+    <TextField fx:id="lastNameField" promptText="Last Name" />
+    <TextField fx:id="phoneNumberField" promptText="Phone Number" />
+
+    <Separator/>
+
+    <Label text="Address Information" style="-fx-font-size: 16px;" />
+    <TextField fx:id="streetField" promptText="Street Address" />
+    <TextField fx:id="cityField" promptText="City" />
+    <TextField fx:id="stateField" promptText="State" />
+    <TextField fx:id="zipCodeField" promptText="Zip Code" />
+
+    <Button text="Submit" onAction="#handleSubmit" />
+
 </VBox>

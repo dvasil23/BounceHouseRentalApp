@@ -2,36 +2,32 @@ package com.example.bouncerentalapp.dao;
 import com.example.bouncerentalapp.MyJDBC;
 import com.example.bouncerentalapp.model.RentalAddress;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RentalAddressDAO
 {
-    public static List<RentalAddress> getRentalAddresses() {
-        List<RentalAddress> rentalAddresses = new ArrayList<>();
+    public static boolean insertAddress(RentalAddress address, String street)
+    {
+
+        String sql =  "INSERT INTO rental_addresses (customer_id, city, state, zip_code, street) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = MyJDBC.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM RENTAL_ADDRESSES")) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            while (rs.next()) {
-                rentalAddresses.add(new RentalAddress(
-                        rs.getInt("addr_id"),
-                        rs.getInt("customer_id"),
-                        rs.getString("city"),
-                        rs.getString("state"),
-                        rs.getString("zip_code")
-                ));
-            }
+            stmt.setInt(1, address.getCustomerID());
+            stmt.setString(2, address.getCity());
+            stmt.setString(3, address.getState());
+            stmt.setString(4, address.getZipCode());
+            stmt.setString(5, street);
+
+            return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
 
-        return rentalAddresses;
     }
 }

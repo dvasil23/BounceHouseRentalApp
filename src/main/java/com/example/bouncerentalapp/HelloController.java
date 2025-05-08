@@ -56,20 +56,6 @@ public class HelloController
     private TableColumn<RentalProduct, Integer> availableColumn;
 
 
-    @FXML
-    private TableView<ProductRating> reviews;
-
-    @FXML
-    private TableColumn<ProductRating,String> reviewColumn;
-
-    @FXML
-    private TableColumn<ProductRating,Float> avgRatingColumn;
-
-    @FXML
-    private TableColumn<ProductRating,Integer> productIDColumn;
-
-    @FXML
-    private TableColumn<ProductRating,String> prodNameColumn;
 
     @FXML
     public void initialize() {
@@ -117,8 +103,6 @@ public class HelloController
             stage.setScene(new Scene(root));
             stage.show();
 
-            List<ProductRating> ratings = ProductRatingDAO.getAllRatings();
-            reviews.setItems(FXCollections.observableArrayList(ratings));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -208,12 +192,12 @@ public class HelloController
         // Pass the product to your checkout controller via constructor, setter, or singleton
         // Then load the checkout scene
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("checkout-view.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/bouncerentalapp/checkout-view.fxml"));
             Parent root = loader.load();
 
             // Optionally pass the selected product
-            CheckoutController controller = loader.getController();
-            controller.setSelectedProduct(product);
+            //CheckoutController controller = loader.getController();
+            //controller.setSelectedProduct(product);
 
             Stage stage = new Stage();
             stage.setTitle("Checkout");
