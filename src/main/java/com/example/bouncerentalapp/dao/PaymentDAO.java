@@ -2,10 +2,7 @@ package com.example.bouncerentalapp.dao;
 import com.example.bouncerentalapp.MyJDBC;
 import com.example.bouncerentalapp.model.Payment;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,5 +31,24 @@ public class PaymentDAO
         }
 
         return payments;
+    }
+
+    public static void insertPayment(int orderID, String cardType, String cardNumber, String cardExpires, String billingAddress){
+        String sql = "INSERT INTO payments (order_id, card_type, card_number, card_expires, billing_address) VALUES (?, ?, ?, ?, ?)";
+
+        try (Connection conn = MyJDBC.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, orderID);
+            stmt.setString(2,cardType);
+            stmt.setString(3,cardNumber);
+            stmt.setString(4,cardExpires);
+            stmt.setString(5,billingAddress);
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
     }
 }

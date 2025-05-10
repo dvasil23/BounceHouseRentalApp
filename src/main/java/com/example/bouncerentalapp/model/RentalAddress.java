@@ -8,13 +8,16 @@ public class RentalAddress
     private String state;
     private String zipCode;
 
+    private String street;
 
-    public RentalAddress(int addrID, int customerID, String city, String state, String zipCode){
+
+    public RentalAddress(int addrID, int customerID, String city, String state, String zipCode, String street){
         this.setAddrID(addrID);
         this.setCustomerID(customerID);
         this.setCity(city);
         this.setState(state);
         this.setZipCode(zipCode);
+        this.setStreet(street);
 
     }
 
@@ -66,5 +69,15 @@ public class RentalAddress
     public void setCustomerID(int customerID)
     {
         this.customerID = customerID;
+    }
+
+    public String getStreet()
+    {
+        return street;
+    }
+
+    public void setStreet(String street)
+    {
+        this.street = street;
     }
 }

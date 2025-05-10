@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.bouncerentalapp.PaymentController">
+   <children>
+      <Label layoutX="272.0" layoutY="14.0" text="Payments" />
+      <TextField layoutX="14.0" layoutY="46.0" promptText="card type" />
+      <TextField layoutX="14.0" layoutY="86.0" promptText="card number" />
+      <TextField layoutX="14.0" layoutY="127.0" promptText="card expires" />
+      <TextField layoutX="14.0" layoutY="166.0" promptText="billing address" />
+      <Button layoutX="124.0" layoutY="227.0" mnemonicParsing="false" text="submit payment" />
+      <Button layoutX="20.0" layoutY="227.0" mnemonicParsing="false" text="cancel" />
+   </children>
+</AnchorPane>

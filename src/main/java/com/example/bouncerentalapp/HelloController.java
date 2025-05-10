@@ -55,6 +55,11 @@ public class HelloController
     @FXML
     private TableColumn<RentalProduct, Integer> availableColumn;
 
+    private LocalDate start;
+
+    private LocalDate end;
+
+    //private int amountChosen = 1;
 
 
     @FXML
@@ -63,14 +68,22 @@ public class HelloController
         priceColumn.setCellValueFactory(data -> new javafx.beans.property.SimpleFloatProperty(data.getValue().getPrice()).asObject());
         availableColumn.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getQuantity()).asObject());
         productTable.setOnMouseClicked(event -> {
+            //when row is double click sho what it is
             if (event.getClickCount() == 2) {
                 RentalProduct selectedProduct = productTable.getSelectionModel().getSelectedItem();
+                start = startDatePicker.getValue();
+                end = endDatePicker.getValue();
                 if (selectedProduct != null) {
                     showProductPopup(selectedProduct);
+                }
+                else{
+                    System.out.println("selectedProduct is null!");
                 }
             }
         });
     }
+
+
 
     @FXML
     protected void onCheckAvailabilityClick() {
@@ -87,7 +100,7 @@ public class HelloController
     }
 
     private void showAlert(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
+        Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setContentText(message);
         alert.show();
     }
@@ -95,7 +108,7 @@ public class HelloController
     @FXML
     private void handleViewReviews() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/bouncerentalapp/product_reviews_view.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/bouncerentalapp/reviews-view.fxml"));
             Parent root = loader.load();
 
             Stage stage = new Stage();
@@ -114,9 +127,13 @@ public class HelloController
         Stage popupStage = new Stage();
         popupStage.setTitle("Product Details");
 
+
         String imageUrl = ProductImageDAO.getImageUrlByProductId(product.getProductID());
         InputStream stream = getClass().getResourceAsStream("/" + imageUrl);
-        System.out.println("Stream is null? " + (stream == null));
+
+        if(stream == null){
+            System.out.println("stream is null");
+        }
         ImageView imageView = new ImageView(new Image(stream));
 
         //getting image path and making image view
@@ -137,7 +154,7 @@ public class HelloController
         imageView.setFitHeight(150);
         imageView.setFitWidth(150);
 
-        // Info Labels
+
         Label nameLabel = new Label("Product: " + product.getProductName());
 
         String category = ProductCategoryDAO.getCategory(product.getCategoryID());
@@ -167,7 +184,7 @@ public class HelloController
         Button checkoutBtn = new Button("Checkout");
         checkoutBtn.setOnAction(e -> {
             popupStage.close();
-            goToCheckout(product);
+            goToCheckout(product,start,end);
         });
 
         // Exit Button
@@ -184,20 +201,22 @@ public class HelloController
 
         Scene scene = new Scene(layout, 350, 450);
         popupStage.setScene(scene);
-        popupStage.initModality(Modality.APPLICATION_MODAL); // Prevent background clicks
+        popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.showAndWait();
     }
 
-    private void goToCheckout(RentalProduct product) {
-        // Pass the product to your checkout controller via constructor, setter, or singleton
-        // Then load the checkout scene
+    private void goToCheckout(RentalProduct product, LocalDate start, LocalDate end) {
+
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/bouncerentalapp/checkout-view.fxml"));
             Parent root = loader.load();
 
-            // Optionally pass the selected product
-            //CheckoutController controller = loader.getController();
-            //controller.setSelectedProduct(product);
+
+
+            CheckoutController controller = loader.getController();
+            controller.setSelectedProduct(product);
+            controller.setSelectedStartDate(start);
+            controller.setSelectedEndDate(end);
 
             Stage stage = new Stage();
             stage.setTitle("Checkout");

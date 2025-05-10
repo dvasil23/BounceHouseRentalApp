@@ -9,7 +9,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.bouncerentalapp.ReviewController">
+            fx:controller="com.example.bouncerentalapp.">
 
     <top>
         <Label text="Product Reviews"
