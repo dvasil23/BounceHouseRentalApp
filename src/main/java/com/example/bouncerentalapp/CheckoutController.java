@@ -128,7 +128,7 @@ public class CheckoutController
         Button payBtn = new Button("go to payments");
         payBtn.setOnAction(e -> {
             popupStage.close();
-            goToPayScreen();
+            goToPayScreen(order.getOrderID());
 
         });
 
@@ -163,13 +163,13 @@ public class CheckoutController
     }
 
     @FXML
-    private void goToPayScreen(){
+    private void goToPayScreen(int orderID){
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/bouncerentalapp/payments-view.fxml"));
             Parent root = loader.load();
 
             PaymentController controller = loader.getController();
-            controller.setOrderID(insertedOrderId);
+            controller.setThisOrderID(orderID);
 
 
             Stage stage = new Stage();

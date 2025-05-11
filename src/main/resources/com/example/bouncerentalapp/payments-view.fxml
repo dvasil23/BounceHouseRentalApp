@@ -9,11 +9,11 @@
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.bouncerentalapp.PaymentController">
    <children>
       <Label layoutX="272.0" layoutY="14.0" text="Payments" />
-      <TextField layoutX="14.0" layoutY="46.0" promptText="card type" />
-      <TextField layoutX="14.0" layoutY="86.0" promptText="card number" />
-      <TextField layoutX="14.0" layoutY="127.0" promptText="card expires" />
-      <TextField layoutX="14.0" layoutY="166.0" promptText="billing address" />
-      <Button layoutX="124.0" layoutY="227.0" mnemonicParsing="false" text="submit payment" />
-      <Button layoutX="20.0" layoutY="227.0" mnemonicParsing="false" text="cancel" />
+      <TextField fx:id="cardTypeField" layoutX="14.0" layoutY="46.0" promptText="card type" />
+      <TextField fx:id="cardNumberField" layoutX="14.0" layoutY="86.0" promptText="card number" />
+      <TextField fx:id="cardExpiresField" layoutX="14.0" layoutY="127.0" promptText="card expires" />
+      <TextField fx:id="billingAddressField" layoutX="14.0" layoutY="166.0" promptText="billing address" />
+      <Button fx:id="payBtn" layoutX="124.0" layoutY="227.0" mnemonicParsing="false" text="submit payment" onAction="#handlePay" />
+      <Button fx:id="cancelBtn" layoutX="20.0" layoutY="227.0" mnemonicParsing="false" text="cancel" />
    </children>
 </AnchorPane>

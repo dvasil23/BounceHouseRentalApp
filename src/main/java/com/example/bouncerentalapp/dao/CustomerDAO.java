@@ -1,6 +1,7 @@
 package com.example.bouncerentalapp.dao;
 import com.example.bouncerentalapp.MyJDBC;
 import com.example.bouncerentalapp.model.Customer;
+import com.example.bouncerentalapp.model.Order;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -39,5 +40,30 @@ public class CustomerDAO
         return generatedId;
     }
 
+    public static Customer getCustomerById(int customerId){
+        Customer customer = null;
 
+        String sql = "SELECT * FROM customers WHERE customer_id = ?";
+
+        try(Connection conn = MyJDBC.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setInt(1, customerId);
+
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()){
+                customer = new Customer(
+                        rs.getInt("customer_id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("phone_number")
+                );
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return customer;
+    }
 }
+
+

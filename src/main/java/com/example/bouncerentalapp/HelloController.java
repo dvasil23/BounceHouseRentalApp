@@ -1,9 +1,6 @@
 package com.example.bouncerentalapp;
 
-import com.example.bouncerentalapp.dao.ProductCategoryDAO;
-import com.example.bouncerentalapp.dao.ProductImageDAO;
-import com.example.bouncerentalapp.dao.ProductRatingDAO;
-import com.example.bouncerentalapp.dao.RentalProductDAO;
+import com.example.bouncerentalapp.dao.*;
 import com.example.bouncerentalapp.model.ProductImage;
 import com.example.bouncerentalapp.model.ProductRating;
 import com.example.bouncerentalapp.model.RentalProduct;
@@ -55,6 +52,7 @@ public class HelloController
     @FXML
     private TableColumn<RentalProduct, Integer> availableColumn;
 
+
     private LocalDate start;
 
     private LocalDate end;
@@ -83,7 +81,10 @@ public class HelloController
         });
     }
 
+    @FXML
+    private void loadProductTable(){
 
+    }
 
     @FXML
     protected void onCheckAvailabilityClick() {
@@ -220,6 +221,70 @@ public class HelloController
 
             Stage stage = new Stage();
             stage.setTitle("Checkout");
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @FXML
+    private void adminSignIn(){
+        Stage popupStage = new Stage();
+        popupStage.setTitle("admin sign in");
+        Label label = new Label("enter username");
+        TextField usernameField = new TextField();
+        Label label2 = new Label("enter password");
+        TextField passwordField = new TextField();
+        Button submitInfo = new Button("submit");
+
+
+        submitInfo.setOnAction(e ->{
+            String username = usernameField.getText();
+            String password = passwordField.getText();
+
+            boolean valid = AdminDAO.checkUserAndPassword(username,password);
+
+            if(username.isEmpty() || password.isEmpty()){
+                showAlert("all fields are required");
+            }
+
+            if(valid){
+                System.out.println("login successful");
+                goToAdmin();
+            }else{
+                System.out.println("login unsuccessful");
+                showAlert("incorrect user or password");
+            }
+        });
+
+
+        HBox buttonBox = new HBox(10, submitInfo);
+        buttonBox.setAlignment(Pos.CENTER);
+
+        VBox layout = new VBox(10);
+        layout.getChildren().addAll(label,usernameField,label2,passwordField, buttonBox);
+        layout.setPadding(new Insets(15));
+        layout.setAlignment(Pos.CENTER);
+
+        Scene scene = new Scene(layout, 350, 450);
+        popupStage.setScene(scene);
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.showAndWait();
+
+    }
+
+    @FXML
+    private void goToAdmin(){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/bouncerentalapp/admin_stats-view.fxml"));
+            Parent root = loader.load();
+
+
+            Stage stage = new Stage();
+            stage.setTitle("Admin");
             stage.setScene(new Scene(root));
             stage.show();
 

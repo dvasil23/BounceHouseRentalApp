@@ -41,7 +41,7 @@ public class PaymentController
 
     private int orderID;
 
-    public void setOrderID(int orderID){
+    public void setThisOrderID(int orderID){
         this.orderID=orderID;
     }
 
@@ -77,22 +77,24 @@ public class PaymentController
         Label payLabel = new Label("payment successfully processed!");
         Label label = new Label("your order confirmation number is: " + orderID);
 
-        Button homePageBtn = new Button("go back to home page");
+        Button reviewsBtn = new Button("go to reviews");
         Button cancelBtn = new Button("cancel order");
 
-        homePageBtn.setOnAction(e -> {
+
+        reviewsBtn.setOnAction(e -> {
+            goToReviews();
             popupStage.close();
-            goToMain();
 
         });
 
         cancelBtn.setOnAction(e -> {
             OrderDAO.cancelOrder(orderID);
             goToMain();
+            popupStage.close();
 
         });
 
-        HBox buttonBox = new HBox(10, homePageBtn, cancelBtn);
+        HBox buttonBox = new HBox(10, reviewsBtn, cancelBtn);
         buttonBox.setAlignment(Pos.CENTER);
 
         VBox layout = new VBox(10);
@@ -104,6 +106,24 @@ public class PaymentController
         popupStage.setScene(scene);
         popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.showAndWait();
+    }
+
+    private void goToReviews(){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/bouncerentalapp/reviews-view.fxml"));
+            Parent root = loader.load();
+
+            ReviewController controller = loader.getController();
+            controller.setSelectedOrderId(orderID);
+
+
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (IOException ev) {
+            ev.printStackTrace();
+        }
     }
 
     @FXML

@@ -35,4 +35,26 @@ public class RentalReviewDAO
 
         return rentalReviews;
     }
+
+    public static void insertReview(int orderId, int customerId, String reviewText, int rating, int productId){
+
+        String sql = "INSERT INTO rental_reviews (order_id, customer_id, product_id, review_text, rating) VALUES (?, ?, ?, ?, ?)";
+
+        try (Connection conn = MyJDBC.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, orderId);
+            stmt.setInt(2, customerId);
+            stmt.setInt(3, productId);
+            stmt.setString(4, reviewText);
+            stmt.setInt(5,rating);
+
+            stmt.executeUpdate();
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+    }
 }

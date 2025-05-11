@@ -45,6 +45,8 @@ public class PaymentDAO
             stmt.setString(4,cardExpires);
             stmt.setString(5,billingAddress);
 
+            stmt.executeUpdate();
+
 
         } catch (SQLException e) {
             e.printStackTrace();

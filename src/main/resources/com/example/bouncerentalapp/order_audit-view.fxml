@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.bouncerentalapp.OrderAuditController">
+    <children>
+        <TableView fx:id="orderAuditTableView" layoutX="86.0" layoutY="100.0" prefHeight="200.0" prefWidth="377.0">
+            <columns>
+                <TableColumn fx:id="orderIDCol" prefWidth="75.0" text="order id" />
+                <TableColumn fx:id="productIDCol" prefWidth="75.0" text="product id" />
+                <TableColumn fx:id="orderTotalCol" prefWidth="75.0" text="order total" />
+                <TableColumn fx:id="actionTypeCol" prefWidth="75.0" text="action type" />
+                <TableColumn fx:id="actionDateCol" prefWidth="75.0" text="action date" />
+            </columns>
+        </TableView>
+        <Label layoutX="252.0" layoutY="36.0" text="order audit">
+            <font>
+                <Font name="System Bold" size="18.0" />
+            </font>
+        </Label>
+        <Button layoutX="60.0" layoutY="338.0" mnemonicParsing="false" text="sign out" />
+    </children>
+</AnchorPane>

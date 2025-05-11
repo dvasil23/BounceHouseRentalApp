@@ -10,11 +10,11 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.bouncerentalapp.ReviewController">
    <children>
-      <TableView layoutX="4.0" layoutY="55.0" prefHeight="241.0" prefWidth="594.0">
+      <TableView fx:id="reviewTable" layoutX="4.0" layoutY="55.0" prefHeight="241.0" prefWidth="594.0">
         <columns>
-          <TableColumn prefWidth="154.5" text="product name" />
-          <TableColumn prefWidth="100.0" text="average rating" />
-            <TableColumn prefWidth="338.5" text="contents" />
+          <TableColumn fx:id="productNameCol" prefWidth="154.5" text="product name" />
+          <TableColumn fx:id="averageRatingCol" prefWidth="100.0" text="average rating" />
+            <TableColumn fx:id="reviewTextCol" prefWidth="338.5" text="contents" />
         </columns>
       </TableView>
       <Label layoutX="223.0" layoutY="14.0" text="Customer Reviews">
@@ -22,7 +22,7 @@
             <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <Button layoutX="65.0" layoutY="345.0" mnemonicParsing="false" text="close" />
-      <Button layoutX="143.0" layoutY="345.0" mnemonicParsing="false" text="submit a review" />
+      <Button layoutX="65.0" layoutY="345.0" mnemonicParsing="false" text="close" onAction="#handleClose"/>
+      <Button layoutX="143.0" layoutY="345.0" mnemonicParsing="false" text="submit a review" onAction="#ratingPopUp"/>
    </children>
 </AnchorPane>
