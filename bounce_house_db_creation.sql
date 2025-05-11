@@ -2,13 +2,24 @@ DROP DATABASE IF EXISTS bounce_house_db;
 CREATE DATABASE bounce_house_db;
 USE bounce_house_db;
 
+
+CREATE TABLE admin
+(
+	admin_id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255),
+	password VARCHAR(255)
+);
+
+INSERT INTO admin(username, password) VALUES('secretuser','secretpassword');
+
+
+
 CREATE TABLE customers
 (
 	customer_id INT AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
-    phone_number VARCHAR(50) NOT NULL,
-    password VARCHAR(50) NOT NULL
+    phone_number VARCHAR(50) NOT NULL
 );
 
 
@@ -35,7 +46,7 @@ CREATE TABLE rental_products
     product_name VARCHAR(50) NOT NULL,
     dimensions VARCHAR(50),
     price INT NOT NULL,
-    qauntity INT,
+    quantity INT,
     FOREIGN KEY (category_id) REFERENCES categories(category_id)
 );
 
@@ -92,10 +103,12 @@ CREATE TABLE payments
     order_id INT NOT NULL,
     card_type VARCHAR(20) NOT NULL,
     card_number VARCHAR(20) NOT NULL,
-    card_expires DATE NOT NULL,
+    card_expires VARCHAR(50) NOT NULL,
     billing_address VARCHAR(50) NOT NULL,
     FOREIGN KEY (order_id) REFERENCES orders(order_id)
 );
+
+
 
 CREATE TABLE rental_dates
 (
@@ -124,29 +137,35 @@ CREATE TABLE rental_addresses
     FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
 );
 
--- join tables
-DROP VIEW order_summary;
-
-CREATE VIEW order_summary AS
-SELECT order_date, p.product_id, product_name, quantity_taken, order_total FROM rental_products p JOIN order_products op ON p.product_id = op.product_id
-JOIN orders o ON o.order_id = op.order_id;
 
 
-DROP VIEW product_names;
-
-CREATE VIEW product_names AS
-SELECT product_name, category_type FROM rental_products p JOIN categories c ON p.category_id = c.category_id;
+CREATE VIEW upcoming_orders AS 
+SELECT o.order_date, d.start_date,
+p.product_id, p.product_name, op.quantity_taken, o.order_total
+FROM rental_products p JOIN order_products op ON p.product_id = op.product_id JOIN rental_dates d ON d.order_product_id = op.order_product_id 
+JOIN orders o ON o.order_id = d.order_id
+WHERE d.start_date >= current_date();
 
 
 
+CREATE VIEW customer_info AS
+SELECT o.order_id, a.street, a.city, a.state, a.zip_code, c.first_name, c.last_name, c.phone_number, d.start_date
+FROM rental_dates d JOIN rental_products p ON d.product_id = p.product_id JOIN order_products op ON p.product_id = op.product_id JOIN orders o ON op.order_id = o.order_id JOIN customers c ON c.customer_id = o.order_id
+JOIN rental_addresses a ON a.customer_id = c.customer_id
+WHERE d.start_date >= current_date();
 
 
--- CREATE VIEW taken_dates AS
--- SELECT p.product_id, product_name, start_date, end_date, quantity AS amount_available
+
+
+-- CREATE VIEW taken_dates AS 
+-- SELECT p.product_id, product_name, start_date, end_date, quantity AS amount_available 
 -- FROM rental_dates d JOIN rental_products p ON d.product_id = p.product_id;
 
+
+
 CREATE VIEW product_ratings AS
-SELECT AVG(rating) AS average_rating, p.product_id, product_name FROM rental_reviews r JOIN rental_products p ON r.product_id = p.product_id;
+SELECT r.review_text, AVG(rating) AS average_rating, p.product_id, product_name FROM rental_reviews r JOIN rental_products p ON r.product_id = p.product_id
+GROUP BY r.review_text, p.product_name, r.product_id;
 
 -- triggers
 
@@ -172,12 +191,14 @@ VALUES (OLD.order_id, OLD.product_id, OLD.order_total, 'DELETED', NOW());
 END $$
 DELIMITER ;
 
+-- trigger after insert capitalize address states
+-- 
 
 
 DROP PROCEDURE IF EXISTS createOrder;
 
 DELIMITER $$
-CREATE PROCEDURE createOrder(IN in_customer_id INT, IN in_product_id INT, IN in_start_date DATE, IN in_end_date DATE, IN amount_chosen INT)
+CREATE PROCEDURE createOrder(IN in_customer_id INT, IN in_product_id INT, IN in_start_date DATE, IN in_end_date DATE, IN amount_chosen INT, OUT out_order_id INT)
 BEGIN
 DECLARE total_price DECIMAL(10,2);
 DECLARE rental_days INT;
@@ -209,11 +230,12 @@ SET new_order_product_id = last_insert_id();
 INSERT INTO rental_dates(product_id, start_date, end_date, order_product_id, order_id)
 VALUES(in_product_id, in_start_date, in_end_date, new_order_product_id, new_order_id);
 
+SET out_order_id = new_order_id;
+
 END $$
 DELIMITER ;
 
 
-DROP PROCEDURE cancelOrder;
 
 DELIMITER $$
 CREATE PROCEDURE cancelOrder(IN i_order_id INT)
@@ -225,12 +247,14 @@ DELETE FROM order_products WHERE order_id = i_order_id;
 
 DELETE FROM orders WHERE order_id = i_order_id;
 
+DELETE FROM payments WHERE order_id = i_order_id;
+
 
 
 END $$
 DELIMITER ;
 
-DROP PROCEDURE checkAvailableProducts;
+
 
 -- need to check if product is available before order is created
 DELIMITER $$
@@ -238,12 +262,25 @@ CREATE PROCEDURE checkAvailableProducts(IN user_start_date DATE, IN user_end_dat
 BEGIN
 
 
-SELECT p.product_id, p.category_id, p.product_name, p.dimensions, p.price, p.quantity - IFNULL(SUM(op.quantity_taken), 0) AS amount_available
-FROM rental_products p LEFT JOIN order_products op ON p.product_id = op.product_id LEFT JOIN rental_dates d ON op.order_product_id = d.order_product_id
-AND (d.start_date <= user_end_date AND d.end_date >= user_start_date)
-GROUP BY p.product_id, p.category_id, p.product_name, p.dimensions, p.quantity, p.price
-HAVING amount_available > 0;
+-- SELECT p.product_id, p.category_id, p.product_name, p.dimensions, p.price, p.quantity - IFNULL(SUM(op.quantity_taken), 0) AS amount_available, pi.image_url
+-- FROM rental_products p LEFT JOIN product_images pi ON p.product_id = pi.product_id LEFT JOIN order_products op ON p.product_id = op.product_id LEFT JOIN rental_dates d ON op.order_product_id = d.order_product_id
+-- AND (d.start_date <= user_end_date AND d.end_date >= user_start_date)
+-- GROUP BY p.product_id, p.category_id, p.product_name, p.dimensions, p.quantity, p.price, pi.image_url
+-- HAVING amount_available > 0;
 
+-- if a rental date overlaps with users date, 
+-- then subtract the total quantity with the amount taken for that date, 
+-- otherwise dont subtract anything. 
+-- if quantity taken is null, subtract with zero
+
+SELECT 
+        p.product_id, p.category_id, p.product_name, p.dimensions, p.price, p.quantity - IFNULL(SUM( IF (d.start_date <= user_end_date AND d.end_date >= user_start_date, op.quantity_taken, 0)),   0) AS amount_available, pi.image_url
+    FROM rental_products p
+    LEFT JOIN product_images pi ON p.product_id = pi.product_id
+    LEFT JOIN order_products op ON p.product_id = op.product_id
+    LEFT JOIN rental_dates d ON op.order_product_id = d.order_product_id
+    GROUP BY p.product_id, p.category_id, p.product_name, p.dimensions, p.price, p.quantity, pi.image_url
+    HAVING amount_available > 0;
 
 END $$
 DELIMITER ;
@@ -259,9 +296,7 @@ VALUES (i_customer_id, i_street, i_city, i_state, i_zip_code);
 END $$
 DELIMITER ;
 
--- test customer
-INSERT INTO customers (first_name, last_name, phone_number, password)
-VALUES('john','doe','1234','password');
+
 
 -- categories
 INSERT INTO categories(category_type)
@@ -335,7 +370,7 @@ INSERT INTO rental_products(category_id, product_name, price, quantity)
 VALUES(5, 'White Folding Chair', 2.25, 45);
 
 
-SELECT * FROM rental_products;
+
 -- marquee
 INSERT INTO rental_products(category_id, product_name, price)
 VALUES(6, 'Marquee Letters', 50.00);
@@ -344,31 +379,34 @@ INSERT INTO rental_products(category_id, product_name, price)
 VALUES(6, 'Marquee Numbers', 50.00);
 
 -- IMAGES
+SELECT product_id, product_name FROM rental_products;
 -- Combos
-INSERT INTO product_images (product_id, image_url) VALUES (1, 'images/combos/pretty_pink.png');
-INSERT INTO product_images (product_id, image_url) VALUES (2, 'images/combos/mega_tropical.png');
-INSERT INTO product_images (product_id, image_url) VALUES (3, 'images/combos/firehouse.png');
-INSERT INTO product_images (product_id, image_url) VALUES (4, 'images/combos/mini_marble.png');
+INSERT INTO product_images (product_id, image_url) VALUES (4, 'images/combos/pretty_pink.png');
+INSERT INTO product_images (product_id, image_url) VALUES (1, 'images/combos/mega_tropical.png');
+INSERT INTO product_images (product_id, image_url) VALUES (2, 'images/combos/firehouse.png');
+INSERT INTO product_images (product_id, image_url) VALUES (3, 'images/combos/mini_marble.png');
 
 -- Water Slides
-INSERT INTO product_images (product_id, image_url) VALUES (6, 'images/water_slides/island_drop_single_lane.png');
-INSERT INTO product_images (product_id, image_url) VALUES (7, 'images/water_slides/tiki_shot_dual_lane.png');
-INSERT INTO product_images (product_id, image_url) VALUES (8, 'images/water_slides/liberty_lane.png');
+INSERT INTO product_images (product_id, image_url) VALUES (5, 'images/water slides/island_drop_single_lane.png');
+INSERT INTO product_images (product_id, image_url) VALUES (6, 'images/water slides/tiki_shot_dual_lane.png');
+INSERT INTO product_images (product_id, image_url) VALUES (7, 'images/water slides/liberty_lane.png');
 
 -- Slip n Slide
-INSERT INTO product_images (product_id, image_url) VALUES (9, 'images/slip n slide/marble_slide.png');
+INSERT INTO product_images (product_id, image_url) VALUES (8, 'images/slip n slide/marble_slide.png');
 
 -- Tent Stuff
-INSERT INTO product_images (product_id, image_url) VALUES (10, 'images/tent_stuff/1729227463928_20x20 HighPeakTent.png');
-INSERT INTO product_images (product_id, image_url) VALUES (11, 'images/tent_stuff/1729228275915_LEDBistroLights.png');
+INSERT INTO product_images (product_id, image_url) VALUES (9, 'images/tent stuff/1729227463928_20x20 HighPeakTent.png');
+INSERT INTO product_images (product_id, image_url) VALUES (10, 'images/tent stuff/1729228275915_LEDBistroLights.png');
 
 -- Tables & Chairs
-INSERT INTO product_images (product_id, image_url) VALUES (12, 'images/tables_chairs/white_rectangle_table.png');
-INSERT INTO product_images (product_id, image_url) VALUES (13, 'images/tables_chairs/white_round_table.png');
-INSERT INTO product_images (product_id, image_url) VALUES (14, 'images/tables_chairs/kids_chair.png');
-INSERT INTO product_images (product_id, image_url) VALUES (15, 'images/tables_chairs/kids_table.png');
-INSERT INTO product_images (product_id, image_url) VALUES (16, 'images/tables_chairs/white_chair.png');
+INSERT INTO product_images (product_id, image_url) VALUES (11, 'images/tables and chairs/white_rectangle_table.png');
+INSERT INTO product_images (product_id, image_url) VALUES (12, 'images/tables and chairs/white_round_table.png');
+INSERT INTO product_images (product_id, image_url) VALUES (13, 'images/tables and chairs/kids_chair.png');
+INSERT INTO product_images (product_id, image_url) VALUES (14, 'images/tables and chairs/kids_table.png');
+INSERT INTO product_images (product_id, image_url) VALUES (15, 'images/tables_chairs/white_chair.png');
 
 -- Marquee
-INSERT INTO product_images (product_id, image_url) VALUES (17, 'images/marquee/marquee_letters.png');
-INSERT INTO product_images (product_id, image_url) VALUES (18, 'images/marquee/marquee_numbers.png');
+INSERT INTO product_images (product_id, image_url) VALUES (16, 'images/marquee/marquee_letters.png');
+INSERT INTO product_images (product_id, image_url) VALUES (17, 'images/marquee/marquee_numbers.png');
+
+
